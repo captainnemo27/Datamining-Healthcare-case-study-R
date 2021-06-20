@@ -1,0 +1,348 @@
+---
+title: "Project Datamining - team 4"
+author: "Team 4 Healthcare case study"
+date: "5/16/2021"
+output:
+  html_document: default
+  pdf_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Member
+
+- Đào Văn Thắng 		    18133050
+- Đặng Ngọc Sơn		      18133046
+- Hà Hải Long		        17110326	
+- Trần Minh Tú Trung	  18133060
+
+## Dataset
+In this dataset there are total of 600 observations and 10 variables.9 variables are numeric and 1 variable is categorical.
+
+
+| Variables | Meaning |  
+|:---|:--------|
+| Thickness_of_Clump | Độ dày của khối |
+| Cell_Size_Uniformity |  Sự đồng nhất về kích thước ô tế bào |
+| Cell_Shape_Uniformity | Tính đồng nhất của hình dạng tế bào|
+| Single_Epithelial_Cell_Size | Kích thước tế bào biểu mô đơn |
+| Bare_Nuclei | Hạt nhân trần |
+| Bland_Chromatin | Chất nhiễm sắc nhạt |
+| Normal_Nucleoli| Nucleoli bình thường |
+| Mitoses | khả năng nguyên phân nhân đôi tế bào |
+| Outcome | Bệnh nhân có bị ung thư hay không |
+
+Kết quả (`Outcome`) là biến đích trong dữ liệu, trong đó Có biểu thị sự hiện diện của ung thư ác tính và Không biểu thị là không có ung thư ác tính.
+
+Giá trị đầu vào(`input`): "Thickness_of_Clump", "Cell_Size_Uniformity", "Cell_Shape_Uniformity", "Marginal_Adhesion", "Single_Epithelial_Cell_Size", "Bare_Nuclei",       "Bland_Chromatin", "Normal_Nucleoli", "Mitoses".
+
+Giá trị cần dự đoán (`Output`): "Outcome".
+
+Phương pháp đánh giá: Sai số ngoài túi (OOB) hoặc tỷ lệ phân loại sai. 
+
+Độ đo: confusion matrix.
+
+Nhóm sử dụng thuật toán RandomForest , Descision Tree, knn, Navie bayes.
+
+```{r}
+data1 <- read.csv ("Chapter_05_synthetic_cancer_data.csv",header=TRUE,sep=",")
+# remove Sample_No from data 1
+data1 <- data1[,-1]
+```
+
+```{r}
+
+# display top 6 rows of dataset to see how data look like
+
+head (data1)
+
+
+# display bottom 6 rows
+
+tail(data1)
+
+# describe the structure of data
+
+str(data1) 
+
+#display the column name of the data
+
+names(data1)
+```
+
+```{r}
+# display the datatype
+
+class(data1)
+
+# Check the missing values present in the data 
+
+#is.na(data2)
+
+
+#to check the percentage of benign and malignant breast cancer in the data 
+
+table(data1$Outcome)/nrow(data1)
+
+```
+# Tren thuat toan Random Forest
+
+```{r}
+#install.packages("randomForest")
+#install.packages("glm")
+library(randomForest)
+library(pROC)
+```
+```{r}
+#Building Random Forests model on full data
+data1$Outcome = factor(data1$Outcome)
+rf_model <- randomForest(Outcome ~ ., data=data1, ntree=1500,mtry=3,importance=TRUE)
+
+rf_model
+
+```
+
+```{r}
+	
+library(class)
+library(caTools)
+library(caret)
+library(gmodels)
+
+
+#Set seed in order to reproduce the sample
+
+set.seed(2) 
+
+#splitting data set into training and testing dataset in 70:30 
+
+
+sample <- sample.split(data1$Outcome,SplitRatio=0.70)
+
+#No of observations in train dataset	
+
+train_data <- subset(data1,sample==TRUE)
+
+# No of observations  in test dataset
+
+test_data <- subset(data1,sample==FALSE)
+```
+cach tim mtry
+```{r}
+trControl <- trainControl(method = "cv",
+    number = 5,
+    search = "grid")
+
+
+set.seed(1234)
+tuneGrid <- expand.grid(.mtry = c(1: 10))
+rf_mtry <- train(Outcome~.,
+    data = train_data,
+    method = "rf",
+    metric = "Accuracy",
+    tuneGrid = tuneGrid,
+    trControl = trControl,
+    importance = TRUE,
+    nodesize = 14,
+    ntree = 1500)
+print(rf_mtry)
+best_mtry <- rf_mtry$bestTune$mtry 
+best_mtry
+# tim maxnode
+store_maxnode <- list()
+tuneGrid <- expand.grid(.mtry = best_mtry)
+for (maxnodes in c(20: 30)) {
+    set.seed(1234)
+    rf_maxnode <- train(Outcome~.,
+        data = train_data,
+        method = "rf",
+        metric = "Accuracy",
+        tuneGrid = tuneGrid,
+        trControl = trControl,
+        importance = TRUE,
+        nodesize = 14,
+        maxnodes = maxnodes,
+        ntree = 300)
+    current_iteration <- toString(maxnodes)
+    store_maxnode[[current_iteration]] <- rf_maxnode
+}
+results_mtry <- resamples(store_maxnode)
+summary(results_mtry)
+```
+tìm ntree
+```{r}
+store_maxtrees <- list()
+for (ntree in c(250, 300, 350, 400, 450, 500, 550, 800, 1000, 1500, 2000)) {
+    set.seed(5678)
+    rf_maxtrees <- train(Outcome~.,
+        data = train_data,
+        method = "rf",
+        metric = "Accuracy",
+        tuneGrid = tuneGrid,
+        trControl = trControl,
+        importance = TRUE,
+        nodesize = 14,
+        maxnodes = 15,
+        ntree = ntree)
+    key <- toString(ntree)
+    store_maxtrees[[key]] <- rf_maxtrees
+}
+results_tree <- resamples(store_maxtrees)
+summary(results_tree)
+```
+```{r}
+library(randomForest)
+fit_rf <- train(Outcome~.,
+    train_data,
+    method = "rf",
+    metric = "Accuracy",
+    tuneGrid = tuneGrid,
+    trControl = trControl,
+    importance = TRUE,
+    nodesize = 14,
+    ntree = 300,
+    maxnodes = 15)
+
+prediction <-predict(fit_rf, test_data)
+confusionMatrix(prediction, test_data$Outcome)
+varImp(fit_rf)
+```
+```{r}
+r_model <- randomForest(Outcome ~ ., data=train_data,ntree=1500,mtry=3, importance=TRUE)
+
+
+print(r_model)
+
+plot(r_model)
+
+plot(randomForest::margin(r_model,test_data$Outcome))
+
+
+# Predicting the model using test data
+
+ran_pred <- predict(r_model,test_data)
+
+
+#Display the confusion matrix or classification table
+
+table(test_data$Outcome ,ran_pred)
+
+
+# Predicting the probability matrix  using test data
+
+ran_prob <- predict(r_model,test_data,type = "prob" )
+
+ran_prob
+
+varImpPlot(r_model)
+
+
+```
+Nhận xét:
+* Độ chính xác của thuật toán KNN cho tập dữ liệu là \n
+* $$ Accuracy = \frac{TP + TN}{TP + TN + FP + FN} = \frac{Yes + Yes}{Yes + No} $$
+* $$PosPredValue = \frac{TP}{TP+FN} = \frac{}{}$$
+* $$NegPredValue = \frac{TN}{TN+FP} = \frac{}{}$$
+* $$Kappa = \frac{P_{0} - {P_{e}}}{1 - {P_{e}}} = \frac{}{}$$
+```{r}
+
+ran_prob1<-data.frame(ran_prob)
+confusionMatrix(ran_pred, test_data$Outcome)
+
+```
+
+# Trên thuật toán Descision Tree
+```{r}
+#install.packages("tree")
+library(class)
+library(tree)
+set.seed(1000)
+training <- train_data
+testing <- test_data
+tree(Outcome~., data=training) ->treeRaw
+# Create new plot window
+plot(treeRaw)
+text(treeRaw)
+```
+```{r}
+cv_tree<-cv.tree(treeRaw, FUN=prune.misclass)
+
+plot(cv_tree)
+prune.misclass(treeRaw, best=6) -> prune_tree
+plot(prune_tree)
+text(prune_tree, pretty=0)
+predict(prune_tree, testing, type='class') -> pred_test
+confusionMatrix(pred_test, testing$Outcome)
+```
+# Trên thuật toán KNN (K Nearest Neighbors)
+```{r}
+#install.packages("gmodels")
+library(class)
+library(caTools)
+library(caret)
+library(gmodels)
+set.seed(1000)
+
+
+traindata_KNN <- train_data
+testdata_KNN <- test_data 
+
+
+ctrl <-trainControl(method ="repeatedcv", 
+                    number =10, 
+                    repeats=5)
+
+
+customGrid <-expand.grid(k=1:60)
+
+train(Outcome~., 
+      data=traindata_KNN,
+      method = "knn", 
+      trControl = ctrl, 
+      preProcess= c("center","scale"), 
+      tuneGrid = customGrid, 
+      metric="Accuracy") -> knnFit
+
+knnFit
+```
+```{r}
+plot(knnFit, type="b",col = "dodgerblue", xlab="KNNFit",ylab="Accuracy level")
+```
+```{r}
+pred_test <-predict(knnFit, newdata = testdata_KNN)
+
+confusionMatrix(pred_test, testdata_KNN$Outcome)
+```
+# Thuật toán Navie Bayes
+```{r}
+#install.packages("e1071")
+#install.packages("caret")
+library(class)
+library(caTools)
+library(e1071)
+library(caret)
+set.seed(1000)
+
+training <- train_data
+testing <- test_data
+
+
+ctrl <- trainControl(method="repeatedcv",repeats = 5)
+navieBFit <- train(Outcome ~ .,
+                 data = training,
+                 method = "naive_bayes",
+                trControl = ctrl,
+                 preProcess = c("center","scale"),
+                metric="Accuracy")
+
+plot(navieBFit)
+
+```
+```{r}
+predict(navieBFit, newdata = testing) -> pred_test
+Outcome <- as.factor(testing$Outcome)
+confusionMatrix(pred_test,Outcome )
+
+```

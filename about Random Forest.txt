@@ -1,0 +1,146 @@
+Random Forest là một phương pháp học tập tổng hợp bao gồm nhiều cây quyết định, 
+được sử dụng để xác định kết quả cuối cùng Random Forest là một trong những thuật toán máy học phổ biến 
+và mạnh mẽ nhất và là một trong những thuật toán phân loại tốt nhất. Thuật toán Random Forest được phát 
+triển bởi Leo Breiman và Adele Cutler. Rừng ngẫu nhiên được sử dụng cho các bài toán phân loại và hồi quy.
+ Đối với các bài toán phân loại, tập hợp các cây quyết định đơn giản sẽ bầu chọn loại phổ biến nhất và 
+trong các bài toán hồi quy, ước tính của biến phụ thuộc sẽ đạt được bằng cách lấy giá trị trung bình của câu trả lời của họ. 
+Học tập theo nhóm là phương pháp mà những người học yếu kết hợp với nhau để tạo thành những người học mạnh; 
+do đó, mô hình cây quyết định tổng hợp sẽ có khả năng dự đoán tốt hơn và độ chính xác cao hơn. 
+Trong Rừng ngẫu nhiên, mỗi cây được phát triển đến kích thước tối đa ; 
+nó có nghĩa là không có việc cắt tỉa nào được thực hiện trên cây - tất cả các cây đều không được cắt tỉa
+
+Cây quyết định được xây dựng bằng cách sử dụng dữ liệu đầy đủ với tất cả các tính năng hoặc biến 
+trong khi trong Rừng ngẫu nhiên, mỗi cây quyết định được phát triển dựa trên sự lựa chọn ngẫu nhiên 
+của mẫu (có thay thế) và lựa chọn ngẫu nhiên của một tập hợp con các tính năng. Cây quyết định đơn 
+có các vấn đề về phương sai cao nhưng Random Forest giúp giải quyết các vấn đề về phương sai cao 
+bằng cách lấy trung bình của phương sai, do đó tăng độ chính xác dự đoán của mô hình và cuối cùng 
+tránh được việc trang bị quá mức.
+
+
+Rừng Ngẫu nhiên trồng nhiều cây quyết định đơn giản và mỗi cây quyết định được trồng như
+cách thức sau đây.
+Bước 1: Chọn ngẫu nhiên n số trường hợp mẫu thay thế từ N dữ liệu ban đầu, lý tưởng là n <N. 
+Số trường hợp mẫu n này sẽ là tập huấn luyện được sử dụng để phát triển cây quyết định (trong đó N 
+là tập dữ liệu gốc và n là mẫu ngẫu nhiên hoặc tập hợp con của tập dữ liệu gốc).
+Bước 2: Chọn ngẫu nhiên p đối tượng từ các đối tượng của P, trong đó lý tưởng là p << P và trong khi 
+phát triển Rừng ngẫu nhiên, giá trị của p được giữ không đổi. Trong đó P là tổng số đối tượng hoặc 
+biến, p là tập con ngẫu nhiên của các đối tượng hoặc biến .
+(Leo Brieman gợi ý ba giá trị khả dĩ cho p: P P,, 2 1 P 2 cho 
+các bài toán phân loại và P3 cho các bài toán hồi quy.)
+Bước 3: Bước tiếp theo là tính toán mức phân chia tốt nhất giữa các đối tượng p dựa trên 
+các tiêu chí phân tách khác nhau như (Chỉ số Gini, Thông tin, Entropy, v.v.). Các loại tiêu 
+chí phân tách khác nhau trước đây đã được đề cập chi tiết trong mô hình cây quyết định.
+Bước 4: Chia các nút thành các nút con bằng cách sử dụng cách chia tốt nhất.
+Bước 5: Tiếp tục lặp lại các bước trên cho đến khi thu được các nút lá cuối cùng và T số cây quyết định được xây dựng.
+Bước 6: Dự đoán dữ liệu mới bằng cách kết hợp dự đoán của các cây ntree với nhau. 
+Trong phân loại, kết quả cuối cùng của Rừng ngẫu nhiên thu được dựa trên đa số phiếu bầu 
+của loại phổ biến nhất; và trong ước tính hồi quy, biến phụ thuộc nhận được bằng lấy giá trị trung bình của phản hồi của họ.
+
+
+
+
+• Rừng ngẫu nhiên có thể áp dụng cho cả phân loại và hồi quy
+các vấn đề.
+• Độ chính xác và độ ổn định phân loại rất cao.
+• Cơ sở dữ liệu lớn có thể được xử lý dễ dàng và hiệu quả bởi Rừng ngẫu nhiên.
+• Hữu ích trong việc lựa chọn biến từ cơ sở dữ liệu lớn nơi có nhiều biến hơn quan sát 
+và tạo ra các thước đo tầm quan trọng thay đổi cho mỗi biến dự báo.
+• Rừng ngẫu nhiên là không tham số nên không có giả định về phân bổ chính thức.
+• Xử lý các giá trị bị thiếu và giá trị ngoại lai một cách hiệu quả. Nó có thể được 
+thực hiện bằng phương pháp gán và cách tiếp cận khác là nó có thể được xử lý dễ dàng 
+bằng thủ tục tích hợp sẵn của phân vùng đệ quy hoặc phân tách thay thế.
+• Hữu ích trong việc mô hình hóa các tương tác phức tạp giữa các biến dự báo.
+• Hữu ích trong việc giảm vấn đề mặc trang phục quá nhiều.
+
+
+
+-Random Forest không dễ diễn giải.
+• Chúng không hoạt động tốt khi được áp dụng trong các bài toán hồi quy.
+• Nếu dữ liệu bao gồm các biến phân loại với số lượng khác nhau
+cấp độ, thì thuật toán Rừng ngẫu nhiên sẽ có xu hướng có lợi cho
+những thuộc tính có nhiều cấp độ hơn, do đó tầm quan trọng thay đổi
+điểm không đáng tin cậy trong loại dữ liệu như vậy. Các phương pháp như hoán vị từng phần đã được sử dụng để giải quyết vấn đề.
+• Nếu dữ liệu bao gồm các biến độc lập tương quan có nghĩa là có
+là đa cộng tuyến trong dữ liệu; trong trường hợp đó, thước đo mức độ quan trọng biến Rừng ngẫu nhiên không đáng tin cậy và có thể gây hiểu nhầm.
+
+
+How to Select Ntrees in Random Forest?
+
+Rừng ngẫu nhiên là một kỹ thuật máy học hiệu quả và mạnh mẽ có thể hoạt động nhanh chóng 
+trên các tập dữ liệu khổng lồ. Bây giờ, câu hỏi tiếp theo là làm thế nào để xác định số 
+lượng cây quyết định khi chọn một Khu rừng ngẫu nhiên. Nguyên tắc chung để quyết định 
+số lượng tối ưu cây quyết định dựa trên xuất-túi (OOB)
+tỷ lệ lỗi; nó có nghĩa là xây dựng các cây cho đến khi lỗi không còn giảm nữa. 
+Nếu không có mối quan tâm về thời gian tính toán, thì số lượng cây nhiều hơn sẽ đưa ra 
+các ước tính tốt hơn và đáng tin cậy từ các dự đoán ngoài khả năng. Nhìn vào tỷ lệ lỗi OOB , 
+số lượng cây nhiều hơn được trồng và dừng lại sau khi chúng chững lại, bởi vì một ngưỡng đạt 
+được sau đó và việc tăng số lượng cây sẽ không mang lại bất kỳ hiệu suất đáng kể nào trừ khi 
+có sẵn một môi trường tính toán khổng lồ.
+
+
+How to Select mtry in Random Forest?
+
+Điều quan trọng tiếp theo trong việc xây dựng Rừng ngẫu nhiên là quyết định có bao nhiêu đặc 
+điểm hoặc biến (mtry) phải được xem xét cho mỗi lần tách của cây. nó có thể được thực hiện dựa
+ trên thử và sai và tìm ra vị trí mà mô hình có độ chính xác dự đoán cao. Hãy lấy ví dụ về tập 
+dữ liệu đào tạo chăm sóc sức khỏe có 1.000 quan sát và 25 biến, trong đó số lượng tính năng hoặc
+ biến cho mỗi phần tách phân loại
+cây được tính bằng sqrt P, là sqrt 25; do đó số lượng tính năng hoặc biến được sử dụng cho mỗi 
+lần tách là 5. Trong cây hồi quy, số lượng tính năng hoặc biến cho mỗi cây hồi quy được tính 
+là P / 3, là 25 / 3; do đó số lượng tính năng hoặc biến được sử dụng cho mỗi lần tách là 8.
+
+
+
+
+Out-of-Bag (OOB) Error in Random Forests
+
+Trong kỹ thuật Rừng ngẫu nhiên, không cần tập hợp xác thực riêng để có được ước 
+tính không thiên vị về lỗi tập hợp xác thực, ước tính được thực hiện nội bộ trong 
+quá trình chạy. Trong Rừng ngẫu nhiên, mỗi cây được xây dựng bằng cách sử dụng một 
+mẫu bootstrap khác với sự thay thế từ dữ liệu gốc. Trong lần lấy mẫu này, khoảng hai 
+phần ba dữ liệu được sử dụng để đào tạo và được gọi là mẫu trong túi; và khoảng một 
+phần ba trường hợp được bỏ ra khỏi mẫu bootstrap và có thể được sử dụng để xác nhận và 
+ọi ra -mẫu ngoài túi và sai số ước tính trên các mẫu ngoài túi này là lỗi ngoài túi. Sai 
+số ngoài túi (OOB) hoặc tỷ lệ phân loại sai là một phương pháp để đo lường sai số dự đoán 
+của ngẫu nhiên Rừng. Tỷ lệ lỗi của Rừng ngẫu nhiên phụ thuộc vào mối tương quan giữa hai cây 
+bất kỳ trong Rừng ngẫu nhiên. Nếu mối tương quan giữa các cây tăng lên thì tỷ lệ lỗi cũng tăng. 
+Nếu tương quan thì tỷ lệ lỗi cũng giảm và sức mạnh của e ach từng cây riêng lẻ trong 
+Rừng Ngẫu nhiên. Nếu sức mạnh của từng cây riêng lẻ tăng lên, tỷ lệ sai sót; và nếu sức 
+mạnh của từng cây riêng lẻ; giảm, tỷ lệ lỗi tăng lên
+
+
+
+Variable Importance Measures in Random Forests
+
+Trong quy trình Rừng ngẫu nhiên, hai phương pháp giúp ước tính các biến dự báo quan trọng 
+trong mô hình là Độ chính xác giảm trung bình (MDA) và Giảm trung bình Gini (MDG). 
+Độ chính xác giảm trung bình (MDA) và Độ chính xác giảm trung bình (MDG) hơi khác với nhau.
+Độ chính xác giảm trung bình (MDA) còn được gọi là thước đo Hoán vị và được tính bằng chênh 
+lệch chuẩn hóa giữa các quan sát chưa thực hiện của tập thử nghiệm của mỗi biến và các quan 
+sát được hoán vị ngẫu nhiên của tập thử nghiệm của mỗi biến. Để chuẩn hóa tầm quan trọng của
+ biến, mỗi biến được chia cho sai số chuẩn của mỗi biến, là
+được lấy từ tham số “tầm quan trọngSD” từ mô hình. Giá trị Độ chính xác giảm trung bình (MDA)
+ cao hơn biểu thị mức độ quan trọng có thể thay đổi được. mỗi nút cây phân chia được chuẩn hóa
+theo số lượng cây. Trung bình Giảm Gini (MDG) đo độ tinh khiết của biến. Giá trị IncNodePurity
+ cao hơn biểu thị mức độ quan trọng của biến cao hơn (tức là các nút đó là thuần túy). 
+Khi số lượng biến lớn, sau đó một Khu rừng Ngẫu nhiên được xây dựng bằng cách sử dụng tất 
+cả các biến; và sau đó chọn các biến quan trọng nhất từ ​​lần chạy đầu tiên, mô hình Khu rừng 
+Ngẫu nhiên có thể được xây dựng lại một lần nữa
+
+
+
+Proximity Measures in Random Forests
+
+Tiệm cận được định nghĩa là độ gần giữa các cặp trường hợp hoặc quan sát. 
+Trong Rừng Ngẫu nhiên, độ gần được tính cho từng cặp trường hợp hoặc quan sát; 
+nếu hai trường hợp có cùng một nút đầu cuối thông qua một cây, thì khoảng cách 
+của chúng được tăng lên một. Kết hợp tổng thể cây trong Rừng Ngẫu nhiên và chuẩn 
+hóa gấp đôi số cây trong đó. Các điểm gần nhau tạo thành ma trận N * N. Các trường 
+hợp đường chéo chính trong ma trận tiệm cận sẽ có tiệm cận hoàn hảo với chính nó, 
+nghĩa là tiệm cận gần bằng một và có nghĩa là rằng các quan sát hoặc trường hợp đó 
+là tương tự nhau trong khi các trường hợp gần bằng 0 có nghĩa là các quan sát hoặc 
+trường hợp đó không giống nhau. Các trường hợp gần nhau được sử dụng để thay thế các 
+giá trị còn thiếu cho dữ liệu được giám sát và không được giám sát, xác định vị trí 
+ngoại lệ, trực quan hóa dữ liệu hướng dẫn sử dụng tỷ lệ số liệu và phân tầng mức độ 
+quan trọng . Trong các tập dữ liệu lớn, ma trận N * N gần nhau không khớp đúng cách 
+nên để xử lý các tập dữ liệu lớn, Rừng Ngẫu nhiên sử dụng "compres sed ”dạng ma trận tiệm cận.
